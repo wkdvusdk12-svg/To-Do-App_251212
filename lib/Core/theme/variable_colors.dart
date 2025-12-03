@@ -1,7 +1,7 @@
 // 테마 모드에 따라 변경되는 색상
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+
 
 @immutable
 class VariableColors extends ThemeExtension<VariableColors> {

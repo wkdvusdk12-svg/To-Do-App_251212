@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'Core/app_theme.dart';
-import 'Riverpod/View/home_page.dart';
+import 'core/theme/app_theme.dart';
+
+import 'core/router/app_router.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -12,12 +13,12 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const HomePage(title: '한결`s Tasks'),
+      routerConfig: appRouter,
     );
   }
 }

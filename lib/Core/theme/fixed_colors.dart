@@ -2,7 +2,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+
 
 @immutable
 class FixedColors extends ThemeExtension<FixedColors> {
