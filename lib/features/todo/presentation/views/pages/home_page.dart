@@ -32,22 +32,27 @@ class HomePage extends HookConsumerWidget {
       appBar: AppBar(title: Text(title)),
       body: RefreshIndicator(
         onRefresh: () => ref.read(todoListProvider.notifier).refresh(),
-        child: items.isEmpty
-            ? const Center(child: Text('할 일이 없습니다'))
-            : ListView.separated(
-                controller: scrollController,
-                itemCount: items.length + 1,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (_, i) {
-                  if (i == items.length) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  return _Tile(item: items[i]);
-                },
-              ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: items.isEmpty
+                ? const Center(child: Text('할 일이 없습니다'))
+                : ListView.separated(
+                    controller: scrollController,
+                    itemCount: items.length + 1,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (_, i) {
+                      if (i == items.length) {
+                        return const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      return _Tile(item: items[i]);
+                    },
+                  ),
+          ),
+        ),
       ),
       floatingActionButton: TapDebouncer(
         onTap: () async {

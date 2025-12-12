@@ -1,30 +1,40 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/todo.dart';
 import '../../domain/repositories/todo_repository.dart';
 import '../../data/repositories/todo_repository_memory.dart';
 
-final todoRepositoryProvider = Provider<ToDoRepository>((ref) {
+part 'todo_list_notifier.g.dart';
+
+@Riverpod(keepAlive: true)
+ToDoRepository todoRepository(TodoRepositoryRef ref) {
   return ToDoRepositoryMemory();
-});
+}
 
-final todoListProvider =
-    StateNotifierProvider<ToDoListNotifier, List<ToDo>>((ref) {
-  final repo = ref.watch(todoRepositoryProvider);
-  return ToDoListNotifier(repo);
-});
-
-class ToDoListNotifier extends StateNotifier<List<ToDo>> {
-  ToDoListNotifier(this._repo) : super(const []) {
-    refresh();
-  }
-
-  final ToDoRepository _repo;
+@Riverpod(keepAlive: true)
+class TodoList extends _$TodoList {
+  late ToDoRepository _repo;
   bool _isLoading = false;
   bool _hasMore = true;
 
   bool get isLoading => _isLoading;
   bool get hasMore => _hasMore;
+
+  @override
+  List<ToDo> build() {
+    _repo = ref.watch(todoRepositoryProvider);
+    // Initial fetch is handled by the constructor in original code,
+    // but here we should probably fetch in build or use FutureProvider?
+    // Original code: super(const []) { refresh(); }
+    // We can call refresh() here but it's async.
+    // Ideally, we should return Future<List<ToDo>> (AsyncNotifier).
+    // But to keep signature List<ToDo> (Notifier), we initialize with empty and fetch.
+    // However, side-effects in build are discouraged.
+    // Let's mimic the original behavior: start empty, then fetch.
+    // We can use a microtask or just call refresh.
+    Future.microtask(() => refresh());
+    return [];
+  }
 
   Future<void> refresh() async {
     if (_isLoading) return;

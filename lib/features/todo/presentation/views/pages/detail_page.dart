@@ -19,39 +19,44 @@ class DetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(todo.title),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Hero(
-              tag: 'todo_title_${todo.id}',
-              child: Material(
-                color: Colors.transparent,
-                child: Text(
-                  todo.title,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (todo.description != null)
-              Text(
-                todo.description!,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            const SizedBox(height: 24),
-            Row(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  todo.isDone ? Icons.check_circle : Icons.circle_outlined,
-                  color: todo.isDone ? Colors.green : Colors.grey,
+                Hero(
+                  tag: 'todo_title_${todo.id}',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      todo.title,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Text(todo.isDone ? 'Completed' : 'Pending'),
+                const SizedBox(height: 16),
+                if (todo.description != null)
+                  Text(
+                    todo.description!,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Icon(
+                      todo.isDone ? Icons.check_circle : Icons.circle_outlined,
+                      color: todo.isDone ? Colors.green : Colors.grey,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(todo.isDone ? 'Completed' : 'Pending'),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

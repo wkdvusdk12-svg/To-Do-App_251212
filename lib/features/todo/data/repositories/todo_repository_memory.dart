@@ -12,7 +12,7 @@ class ToDoRepositoryMemory implements ToDoRepository {
       ToDo(id: '2', title: '샘플 작업 2', isFavorite: true),
     ]);
     _emit();
-    _ctrl.add(List.unmodifiable(_items));
+
   }
 
   void _emit() => _ctrl.add(List.unmodifiable(_items));
@@ -22,7 +22,8 @@ class ToDoRepositoryMemory implements ToDoRepository {
   Future<List<ToDo>> fetch({int limit = 15, ToDo? startAfter}) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
-    _items.sort((a, b) {
+    final sortedItems = List<ToDo>.from(_items);
+    sortedItems.sort((a, b) {
       if (a.createdAt == null && b.createdAt == null) return 0;
       if (a.createdAt == null) return 1;
       if (b.createdAt == null) return -1;
@@ -31,16 +32,16 @@ class ToDoRepositoryMemory implements ToDoRepository {
 
     int startIndex = 0;
     if (startAfter != null) {
-      final index = _items.indexWhere((item) => item.id == startAfter.id);
+      final index = sortedItems.indexWhere((item) => item.id == startAfter.id);
       if (index != -1) {
         startIndex = index + 1;
       }
     }
 
-    if (startIndex >= _items.length) return [];
+    if (startIndex >= sortedItems.length) return [];
 
-    final endIndex = (startIndex + limit).clamp(0, _items.length);
-    return _items.sublist(startIndex, endIndex);
+    final endIndex = (startIndex + limit).clamp(0, sortedItems.length);
+    return sortedItems.sublist(startIndex, endIndex);
   }
 
   @override
@@ -52,7 +53,7 @@ class ToDoRepositoryMemory implements ToDoRepository {
       createdAt: DateTime.now(),
     );
     _items.insert(0, todo);
-    _ctrl.add(_items);
+    _emit();
     return todo;
   }
 
@@ -61,7 +62,7 @@ class ToDoRepositoryMemory implements ToDoRepository {
     final index = _items.indexWhere((t) => t.id == todo.id);
     if (index != -1) {
       _items[index] = todo;
-      _ctrl.add(_items);
+      _emit();
     }
   }
 
@@ -70,7 +71,7 @@ class ToDoRepositoryMemory implements ToDoRepository {
     final index = _items.indexWhere((t) => t.id == id);
     if (index != -1) {
       _items[index] = _items[index].copyWith(isDone: value);
-      _ctrl.add(_items);
+      _emit();
     }
   }
 
@@ -79,13 +80,17 @@ class ToDoRepositoryMemory implements ToDoRepository {
     final index = _items.indexWhere((t) => t.id == id);
     if (index != -1) {
       _items[index] = _items[index].copyWith(isFavorite: value);
-      _ctrl.add(_items);
+      _emit();
     }
   }
 
   @override
   Future<void> delete(String id) async {
     _items.removeWhere((t) => t.id == id);
-    _ctrl.add(_items);
+    _emit();
+  }
+
+  void dispose() {
+    _ctrl.close();
   }
 }
